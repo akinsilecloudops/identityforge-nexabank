@@ -1,1 +1,6 @@
+variable "s3_bucket_name" {
+  description = "Globally-unique name for the S3 backup/logs bucket. Leave empty to auto-generate."
+  type        = string
+  default     = ""
+}
 
