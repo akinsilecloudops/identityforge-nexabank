@@ -5,7 +5,7 @@ variable "instance_type" {
 }
 
 variable "ami_id" {
-  description = "AMI ID for the EC2 instance. 
+  description = "AMI ID for the EC2 instance."
   type        = string
   default     = ""
 }
@@ -17,7 +17,6 @@ variable "ssh_cidr_blocks" {
 }
 
 variable "key_name" {
-  description = "Name of EC2 key pair for SSH access. 
+  description = "Name of an existing EC2 key pair for SSH access. Leave empty to launch without a key pair."
   type        = string
   default     = ""
-}
