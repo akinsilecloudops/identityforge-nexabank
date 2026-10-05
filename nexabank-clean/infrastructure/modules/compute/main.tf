@@ -31,7 +31,11 @@ resource "aws_security_group" "ec2" {
   description = "SG for ${local.name} EC2 instance"
   vpc_id      = aws_vpc.nexabank.id
 
-  ingress {
+# Only open SSH when a key pair is actually in use. With no key pair the
+  # instance is reached via SSM Session Manager, so port 22 stays closed.
+  dynamic "ingress" {
+    for_each = var.key_name != "" ? [1] : []
+    content {
     description = "SSH from admin/bastion range"
     from_port   = 22
     to_port     = 22
