@@ -19,8 +19,8 @@ output "az_secondary" {
 }
 
 output "alb_subnet_ids" {
-  description = "Public subnets for the regional ALB (AZ-1 and AZ-2)"
-  value       = [aws_subnet.public_primary.id, aws_subnet.public_secondary.id]
+  description = "Public subnets for the ALB (AZ-1, plus the AZ-2)"
+  value       = concat([aws_subnet.public_primary.id], [aws_subnet.public_secondary.id])
 }
 
 output "public_subnet_id_primary" {
