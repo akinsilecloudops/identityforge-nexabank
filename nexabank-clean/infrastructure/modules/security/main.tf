@@ -16,20 +16,21 @@ locals {
     rds      = aws_security_group.rds.id
   }
 
-  # Every allowed SG-to-SG flow. Each entry creates an egress rule on "from"
-  # AND a matching ingress rule on "to".
+  # Each entry creates an egress rule on "from" and a matching ingress rule on "to".
   flows = {
-    # ---- User path: ALB -> API gateway -> Keycloak / RDS
+
+    # User path from ALB to API gateway to Keycloak / RDS
+
     alb_to_gateway      = { from = "alb", to = "gateway", port = var.gateway_port, description = "ALB to API gateway" }
     gateway_to_keycloak = { from = "gateway", to = "keycloak", port = var.keycloak_port, description = "API gateway to Keycloak" }
     gateway_to_rds      = { from = "gateway", to = "rds", port = var.db_port, description = "API gateway to PostgreSQL" }
 
-    # ---- Service-to-service
+    # Service to service
     keycloak_to_rds = { from = "keycloak", to = "rds", port = var.db_port, description = "Keycloak to PostgreSQL" }
     keycloak_to_ca  = { from = "keycloak", to = "ca", port = var.ca_port, description = "Keycloak to CA" }
     ca_to_rds       = { from = "ca", to = "rds", port = var.db_port, description = "CA to PostgreSQL (EJBCA)" }
 
-    # ---- Admin path: bastion only
+    # Admin path (bastion only)
     bastion_to_keycloak_admin = { from = "bastion", to = "keycloak", port = var.keycloak_port, description = "Bastion to Keycloak admin console" }
     bastion_to_keycloak_ssh   = { from = "bastion", to = "keycloak", port = var.ssh_port, description = "Bastion SSH to Keycloak hosts" }
     bastion_to_ca             = { from = "bastion", to = "ca", port = var.ca_port, description = "Bastion to CA admin" }
@@ -37,7 +38,7 @@ locals {
     bastion_to_rds            = { from = "bastion", to = "rds", port = var.db_port, description = "Bastion to PostgreSQL admin" }
   }
 
-  # Outbound internet (via NAT for private tiers): package repos, ECR, KMS, S3, etc.
+  # Outbound internet via NAT 
   internet_egress = {
     bastion_https  = { sg = "bastion", port = 443, description = "Bastion HTTPS out" }
     bastion_http   = { sg = "bastion", port = 80, description = "Bastion HTTP out for OS updates" }
@@ -47,8 +48,9 @@ locals {
   }
 }
 
-# ------------------------------------------------------ Security groups
-# No inline rules: all rules are standalone resources below.
+# Security groups
+# rules
+
 resource "aws_security_group" "alb" {
   name        = "${local.name}-alb-sg"
   description = "Public ALB for user traffic"
@@ -97,7 +99,7 @@ resource "aws_security_group" "rds" {
   tags = merge(local.common_tags, { Name = "${local.name}-rds-sg" })
 }
 
-# ------------------------------------------- Edge: users -> ALB (internet)
+# Edge (users to ALB )
 resource "aws_vpc_security_group_ingress_rule" "alb_https" {
   for_each = toset(var.alb_ingress_cidrs)
 
@@ -120,7 +122,8 @@ resource "aws_vpc_security_group_ingress_rule" "alb_http" {
   description       = "HTTP from users for redirect to HTTPS"
 }
 
-# --------------------------------------- Edge: admins -> bastion (SSH only)
+# Edge (admins to bastion (SSH only))
+
 resource "aws_vpc_security_group_ingress_rule" "bastion_ssh" {
   for_each = toset(var.admin_cidr_blocks)
 
@@ -132,7 +135,7 @@ resource "aws_vpc_security_group_ingress_rule" "bastion_ssh" {
   description       = "SSH from admin"
 }
 
-# --------------------------------------------- Internal SG-to-SG flows
+# Internal SG-to-SG flows
 resource "aws_vpc_security_group_egress_rule" "flow" {
   for_each = local.flows
 
@@ -155,7 +158,7 @@ resource "aws_vpc_security_group_ingress_rule" "flow" {
   description                  = each.value.description
 }
 
-# ------------------------------------------------------ Outbound internet
+#  Outbound internet
 resource "aws_vpc_security_group_egress_rule" "internet" {
   for_each = local.internet_egress
 
