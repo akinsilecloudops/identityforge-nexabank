@@ -15,8 +15,13 @@ data "aws_ami" "al2023" {
   }
 }
 
-locals {
-  ami_id = var.ami_id != "" ? var.ami_id : data.aws_ami.al2023[0].id
+resource "aws_instance" "local.name" {
+  ami           = "resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+  instance_type = "t3.micro"
+
+  tags = {
+    Name = "local.name"
+  }
 }
 
 # Security group for the EC2 instance (uses the provisioned VPC, not the
