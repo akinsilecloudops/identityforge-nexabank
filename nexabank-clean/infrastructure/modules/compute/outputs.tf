@@ -1,14 +1,29 @@
-output "instance_id" {
-  description = "ID of the EC2 instance."
-  value       = aws_instance.app.id
+output "asg_name" {
+  description = "Name of the Auto Scaling Group."
+  value       = aws_autoscaling_group.app.name
 }
 
-output "private_ip" {
-  description = "Private IP of the EC2 instance."
-  value       = aws_instance.app.private_ip
+output "asg_arn" {
+  description = "ARN of the Auto Scaling Group."
+  value       = aws_autoscaling_group.app.arn
+}
+
+output "launch_template_id" {
+  description = "ID of the launch template."
+  value       = aws_launch_template.app.id
 }
 
 output "iam_role_name" {
-  description = "Name of the instance IAM role."
+  description = "Name of the instance IAM role (attach extra policies to this from the root)."
   value       = aws_iam_role.ec2.name
+}
+
+output "iam_role_arn" {
+  description = "ARN of the instance IAM role."
+  value       = aws_iam_role.ec2.arn
+}
+
+output "instance_profile_name" {
+  description = "Name of the instance profile."
+  value       = aws_iam_instance_profile.ec2.name
 }
