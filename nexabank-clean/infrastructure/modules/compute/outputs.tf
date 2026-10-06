@@ -42,3 +42,10 @@ output "ca_sg_id" {
 output "rds_sg_id" {
   description = "RDS security group (attach to primary and replica)."
   value       = module.security.rds_sg_id
+}
+
+# --- KMS keys (from the kms module) -----------------------------------------
+output "kms_key_arns" {
+  description = "Map of KMS key ARNs by purpose (rds / s3 / ebs)."
+  value       = module.kms.key_arns
+}
