@@ -146,3 +146,12 @@ output "rds_master_secret_arn" {
   description = "Secrets Manager ARN for the RDS master credentials"
   value       = module.rds.master_user_secret_arn
 }
+
+output "asg_names" {
+  description = "Auto Scaling Group names (find instances with: aws autoscaling describe-auto-scaling-groups)"
+  value = {
+    bastion  = module.bastion.asg_name
+    keycloak = module.keycloak.asg_name
+    ca       = module.ca.asg_name
+  }
+}
