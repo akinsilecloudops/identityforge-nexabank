@@ -1,6 +1,6 @@
 output "ec2_instance_id" {
   description = "ID of the EC2 instance."
-  value       = aws_security_group.instance_id
+  value       = module.compute.instance_id
 }
 
 output "ec2_private_ip" {
@@ -42,4 +42,3 @@ output "ca_sg_id" {
 output "rds_sg_id" {
   description = "RDS security group (attach to primary and replica)."
   value       = module.security.rds_sg_id
-}
