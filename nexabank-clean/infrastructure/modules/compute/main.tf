@@ -19,37 +19,7 @@ locals {
   ami_id = var.ami_id != "" ? var.ami_id : data.aws_ami.al2023[0].id
 }
 
-# Security group for the EC2 instance (uses the provisioned VPC, not the
-# locked-down default SG).
-resource "aws_security_group" "ec2" {
-  name        = "${local.name}-ec2-sg"
-  description = "SG for ${local.name} EC2 instance"
-  vpc_id      = aws_vpc.nexabank.id
-
-# Only open SSH when a key pair is actually in use. With no key pair the
-  # instance is reached via SSM Session Manager, so port 22 stays closed.
-  dynamic "ingress" {
-    for_each = var.key_name != "" ? [1] : []
-    content {
-    description = "SSH from admin/bastion range"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = var.ssh_cidr_blocks
-  }
-
-  egress {
-    description = "Allow all outbound (via NAT gateway)"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = merge(local.common_tags, { Name = "${local.name}-ec2-sg" })
-}
-
-# IAM: allow the instance to read/write the backup/logs bucket.
+# IAM: assume role + S3 access + SSM Session Manager (keyless shell).
 data "aws_iam_policy_document" "ec2_assume" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -61,16 +31,16 @@ data "aws_iam_policy_document" "ec2_assume" {
 }
 
 resource "aws_iam_role" "ec2" {
-  name               = "${local.name}-ec2-role"
+  name               = "${var.name}-ec2-role"
   assume_role_policy = data.aws_iam_policy_document.ec2_assume.json
-  tags               = local.common_tags
+  tags               = var.tags
 }
 
 data "aws_iam_policy_document" "s3_access" {
   statement {
     sid       = "ListBucket"
     actions   = ["s3:ListBucket"]
-    resources = [aws_s3_bucket.backup_logs.arn]
+    resources = [var.backup_bucket_arn]
   }
 
   statement {
@@ -80,31 +50,46 @@ data "aws_iam_policy_document" "s3_access" {
       "s3:PutObject",
       "s3:DeleteObject",
     ]
-    resources = ["${aws_s3_bucket.backup_logs.arn}/*"]
+    resources = ["${var.backup_bucket_arn}/*"]
+  }
+
+  # The bucket is encrypted with the S3 KMS key, so the instance role must be
+  # able to use that key to read (Decrypt) and write (GenerateDataKey) objects.
+  statement {
+    sid = "UseS3KmsKey"
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey",
+    ]
+    resources = [var.s3_kms_key_arn]
   }
 }
 
 resource "aws_iam_role_policy" "s3_access" {
-  name   = "${local.name}-s3-access"
+  name   = "${var.name}-s3-access"
   role   = aws_iam_role.ec2.id
   policy = data.aws_iam_policy_document.s3_access.json
 }
 
+resource "aws_iam_role_policy_attachment" "ssm" {
+  role       = aws_iam_role.ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 resource "aws_iam_instance_profile" "ec2" {
-  name = "${local.name}-ec2-profile"
+  name = "${var.name}-ec2-profile"
   role = aws_iam_role.ec2.name
-  tags = local.common_tags
+  tags = var.tags
 }
 
 resource "aws_instance" "app" {
   ami                    = local.ami_id
   instance_type          = var.instance_type
-  subnet_id              = aws_subnet.private_primary.id
-  vpc_security_group_ids = [aws_security_group.ec2.id]
+  subnet_id              = var.subnet_id
+  vpc_security_group_ids = var.security_group_ids
   iam_instance_profile   = aws_iam_instance_profile.ec2.name
   key_name               = var.key_name != "" ? var.key_name : null
 
-  # Enforce IMDSv2.
   metadata_options {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
@@ -115,8 +100,8 @@ resource "aws_instance" "app" {
     volume_size = 20
     volume_type = "gp3"
     encrypted   = true
+    kms_key_id  = var.ebs_kms_key_arn != "" ? var.ebs_kms_key_arn : null
   }
 
-  tags = merge(local.common_tags, { Name = "${local.name}-ec2" })
+  tags = merge(var.tags, { Name = "${var.name}-ec2" })
 }
-
