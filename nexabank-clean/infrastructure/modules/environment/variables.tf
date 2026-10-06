@@ -313,3 +313,23 @@ variable "rds_monitoring_interval" {
     error_message = "rds_monitoring_interval must be 1, 5, 10, 15, 30 or 60."
   }
 }
+
+# COMPUTE
+
+variable "bastion_instance_type" {
+  description = "Bastion instance type (x86_64)"
+  type        = string
+  default     = "t3.small"
+}
+
+variable "keycloak_instance_type" {
+  description = "Keycloak instance type (x86_64, JVM app: size to your load)"
+  type        = string
+  default     = "t3.large"
+}
+
+variable "ca_instance_type" {
+  description = "CA instance type (x86_64)"
+  type        = string
+  default     = "t3.small"
+}
