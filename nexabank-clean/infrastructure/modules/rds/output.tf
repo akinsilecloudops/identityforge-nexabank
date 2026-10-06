@@ -99,12 +99,6 @@ variable "master_username" {
   default     = "pgadmin"
 }
 
-variable "master_user_secret_kms_key_id" {
-  description = "KMS key for the managed master password secret (null = AWS-managed Secrets Manager key)"
-  type        = string
-  default     = null
-}
-
 # Backups and maintenance
 
 variable "backup_retention_period" {
