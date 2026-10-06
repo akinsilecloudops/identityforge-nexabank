@@ -44,3 +44,33 @@ access_logs_bucket = null # Set to the S3 bucket name once bucket is available.
 
 # KMS
 deletion_window_in_days = 30
+
+
+# RDS
+
+rds_engine_version          = "17"
+
+rds_instance_class          = "db.t3.micro"
+rds_replica_instance_class  = "db.t3.micro"
+
+rds_allocated_storage       = 20
+rds_max_allocated_storage   = 100
+
+rds_multi_az                = false
+rds_create_read_replica     = true
+
+rds_db_name                 = "nexabank"
+rds_master_username         = "nexabank_admin"
+
+rds_backup_retention_period         = 14
+rds_replica_backup_retention_period = 7
+
+rds_backup_window      = "02:00-03:00"
+rds_maintenance_window = "sun:03:30-sun:04:30"
+
+rds_apply_immediately   = false
+rds_deletion_protection = true
+
+rds_enable_performance_insights = true
+rds_monitoring_role_arn        = null
+rds_monitoring_interval        = 60
