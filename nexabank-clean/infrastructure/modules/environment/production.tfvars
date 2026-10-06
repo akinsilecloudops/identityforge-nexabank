@@ -74,3 +74,9 @@ rds_deletion_protection = true
 rds_enable_performance_insights = true
 rds_monitoring_role_arn        = null
 rds_monitoring_interval        = 60
+
+# Compute
+
+bastion_instance_type  = "t3.small"  # SSH/SSM jump host, light load
+keycloak_instance_type = "t3.large"  # JVM app: 2 vCPU, 8 GiB. t3.medium (4 GiB) is the floor
+ca_instance_type       = "t3.small"  # Smallstep CA is light; EJBCA needs more (t3.large)
