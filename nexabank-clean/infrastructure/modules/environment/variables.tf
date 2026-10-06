@@ -188,9 +188,9 @@ variable "rds_engine_version" {
 }
 
 variable "rds_instance_class" {
-  description = "RDS primary instance class (verify availability in af-south-1)"
+  description = "RDS primary instance class"
   type        = string
-  default     = "db.m5.large"
+  default     = "db.t3.micro"
 }
 
 variable "rds_replica_instance_class" {
@@ -242,7 +242,7 @@ variable "rds_db_name" {
 variable "rds_master_username" {
   description = "RDS master username (not the reserved word admin)"
   type        = string
-  default     = "pgadmin"
+  default     = "nexabank_admin"
 }
 
 variable "rds_backup_retention_period" {
