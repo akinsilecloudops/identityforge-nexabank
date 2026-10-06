@@ -3,6 +3,8 @@ resource "random_id" "bucket_suffix" {
 }
 
 locals {
+  name        = var.name
+  common_tags = var.common_tags
   bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : "${local.name}-backup-logs-${random_id.bucket_suffix.hex}"
 }
 
@@ -27,7 +29,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "backup_logs" {
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm     = "aws:kms"
-      kms_master_key_id = module.kms.s3_key_arn
+      kms_master_key_id = var.s3_kms_key_arn
     }
     bucket_key_enabled = true
   }
