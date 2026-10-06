@@ -42,4 +42,46 @@ module "security" {
   tags = var.tags
 }
 
+# APPLICATION LOAD BALANCER
+
+module "alb" {
+  source = "./modules/alb"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  vpc_id     = module.networking.vpc_id
+  subnet_ids = module.networking.alb_subnet_ids
+
+  security_group_id = module.security.alb_sg_id
+
+  gateway_port         = var.gateway_port
+  health_check_path    = var.health_check_path
+  health_check_matcher = var.health_check_matcher
+
+  certificate_arn = var.certificate_arn
+  ssl_policy      = var.ssl_policy
+
+  enable_http_listener = var.enable_http_listener
+
+  enable_deletion_protection = var.enable_deletion_protection
+  idle_timeout               = var.idle_timeout
+
+  access_logs_bucket = var.access_logs_bucket
+
+  tags = var.tags
+}
+
+
+# KMS CMK
+
+module "kms" {
+  source = "./modules/kms"
+
+  project_name            = var.project_name
+  environment             = var.environment
+  deletion_window_in_days = var.deletion_window_in_days
+
+  tags = var.tags
+}
 
