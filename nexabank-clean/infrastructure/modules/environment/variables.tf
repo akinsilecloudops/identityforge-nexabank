@@ -160,3 +160,20 @@ variable "deletion_window_in_days" {
     error_message = "deletion_window_in_days must be between 7 and 30."
   }
 }
+
+# ALB OUTPUTS
+
+output "alb_dns_name" {
+  description = "ALB DNS name (we point the domain here)"
+  value       = module.alb.alb_dns_name
+}
+
+output "alb_zone_id" {
+  description = "ALB hosted zone ID (for Route 53 alias records)"
+  value       = module.alb.alb_zone_id
+}
+
+output "alb_target_group_arn" {
+  description = "Gateway target group  (the ECS service is attached to this)"
+  value       = module.alb.target_group_arn
+}
