@@ -1,3 +1,5 @@
+# NETWORKING OUTPUTS
+
 output "vpc_id" {
   description = "NexaBank VPC ID"
   value       = module.networking.vpc_id
@@ -51,4 +53,37 @@ output "nat_public_ips" {
 output "internet_gateway_id" {
   description = "Internet Gateway ID"
   value       = module.networking.internet_gateway_id
+}
+
+
+# SECURITY OUTPUTS
+
+output "alb_sg_id" {
+  description = "ALB security group ID"
+  value       = module.security.alb_sg_id
+}
+
+output "bastion_sg_id" {
+  description = "Bastion security group ID"
+  value       = module.security.bastion_sg_id
+}
+
+output "gateway_sg_id" {
+  description = "API gateway security group ID"
+  value       = module.security.gateway_sg_id
+}
+
+output "keycloak_sg_id" {
+  description = "Keycloak security group ID"
+  value       = module.security.keycloak_sg_id
+}
+
+output "ca_sg_id" {
+  description = "CA security group ID"
+  value       = module.security.ca_sg_id
+}
+
+output "rds_sg_id" {
+  description = "RDS security group ID"
+  value       = module.security.rds_sg_id
 }
