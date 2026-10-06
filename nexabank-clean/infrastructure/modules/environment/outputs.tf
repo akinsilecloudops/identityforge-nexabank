@@ -114,3 +114,35 @@ output "kms_ebs_key_arn" {
   description = "KMS key ARN used for EBS encryption"
   value       = module.kms.ebs_key_arn
 }
+
+# RDS OUTPUTS
+
+output "rds_primary_endpoint" {
+  description = "RDS primary endpoint"
+  value       = module.rds.primary_endpoint
+}
+
+output "rds_primary_identifier" {
+  description = "RDS primary instance identifier"
+  value       = module.rds.primary_identifier
+}
+
+output "rds_replica_endpoint" {
+  description = "RDS read replica endpoint"
+  value       = module.rds.replica_endpoint
+}
+
+output "rds_replica_identifier" {
+  description = "RDS read replica identifier"
+  value       = module.rds.replica_identifier
+}
+
+output "rds_database_name" {
+  description = "Initial RDS database name"
+  value       = module.rds.db_name
+}
+
+output "rds_master_secret_arn" {
+  description = "Secrets Manager ARN for the RDS master credentials"
+  value       = module.rds.master_user_secret_arn
+}
