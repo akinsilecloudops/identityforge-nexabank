@@ -64,17 +64,6 @@ variable "enable_http_listener" {
   default     = true
 }
 
-variable "blocked_path_patterns" {
-  description = "Paths answered with 403 at the ALB so admin endpoints are never reachable by users (max 5)"
-  type        = list(string)
-  default     = ["/admin", "/admin/*", "/realms/master", "/realms/master/*"]
-
-  validation {
-    condition     = length(var.blocked_path_patterns) <= 5
-    error_message = "An ALB listener rule condition supports at most 5 path patterns."
-  }
-}
-
 variable "enable_deletion_protection" {
   description = "Protect the ALB from accidental deletion (set true for prod)"
   type        = bool
