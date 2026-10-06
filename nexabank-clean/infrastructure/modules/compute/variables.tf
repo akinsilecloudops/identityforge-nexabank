@@ -52,3 +52,18 @@ variable "key_name" {
   type        = string
   default     = ""
 }
+
+variable "asg_min_size" {
+  type    = number
+  default = 1
+}
+
+variable "asg_max_size" {
+  type    = number
+  default = 1
+}
+
+variable "asg_desired_capacity" {
+  type    = number
+  default = 1
+}
