@@ -85,3 +85,50 @@ module "kms" {
   tags = var.tags
 }
 
+
+# RDS POSTGRESQL
+
+module "rds" {
+  source = "./modules/rds"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  db_subnet_group_name = module.networking.db_subnet_group_name
+  security_group_id    = module.security.rds_sg_id
+  kms_key_arn          = module.kms.rds_key_arn
+
+  az_primary   = module.networking.az_primary
+  az_secondary = module.networking.az_secondary
+
+  engine_version         = var.rds_engine_version
+  instance_class         = var.rds_instance_class
+  replica_instance_class = var.rds_replica_instance_class
+
+  allocated_storage     = var.rds_allocated_storage
+  max_allocated_storage = var.rds_max_allocated_storage
+
+  multi_az            = var.rds_multi_az
+  create_read_replica = var.rds_create_read_replica
+
+  db_port = var.db_port
+
+  db_name         = var.rds_db_name
+  master_username = var.rds_master_username
+
+  backup_retention_period         = var.rds_backup_retention_period
+  replica_backup_retention_period = var.rds_replica_backup_retention_period
+
+  backup_window      = var.rds_backup_window
+  maintenance_window = var.rds_maintenance_window
+
+  apply_immediately = var.rds_apply_immediately
+
+  deletion_protection = var.rds_deletion_protection
+
+  enable_performance_insights = var.rds_enable_performance_insights
+  monitoring_role_arn         = var.rds_monitoring_role_arn
+  monitoring_interval         = var.rds_monitoring_interval
+
+  tags = var.tags
+}
