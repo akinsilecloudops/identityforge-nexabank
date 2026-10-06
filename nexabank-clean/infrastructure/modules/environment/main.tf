@@ -85,6 +85,15 @@ module "kms" {
   tags = var.tags
 }
 
+# IAM
+module "iam" {
+  source = "./iam"
+
+  project_name = var.project_name
+  environment  = var.environment
+  tags         = var.tags
+}
+
 
 # RDS POSTGRESQL
 
@@ -127,7 +136,7 @@ module "rds" {
   deletion_protection = var.rds_deletion_protection
 
   enable_performance_insights = var.rds_enable_performance_insights
-  monitoring_role_arn         = var.rds_monitoring_role_arn
+  monitoring_role_arn         = module.iam.rds_monitoring_role_arn
   monitoring_interval         = var.rds_monitoring_interval
 
   tags = var.tags
