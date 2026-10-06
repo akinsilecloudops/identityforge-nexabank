@@ -1,4 +1,4 @@
-# NETWORKING VARIABLES 
+# GENERAL
 
 variable "project_name" {
   description = "Project name used as a prefix for resource names"
@@ -15,6 +15,14 @@ variable "environment" {
   }
 }
 
+variable "tags" {
+  description = "Additional tags applied to all resources"
+  type        = map(string)
+  default     = {}
+}
+
+# NETWORKING
+
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   type        = string
@@ -27,40 +35,12 @@ variable "vpc_cidr" {
 }
 
 variable "enable_s3_gateway_endpoint" {
-  description = "Enable the S3 Gateway VPC endpoint"
-  type        = bool
-  default     = true
-}
-
-variable "tags" {
-  description = "Additional tags applied to infrastructure"
-  type        = map(string)
-  default     = {}
-}
-
-#SECURITY VARIABLES 
-
-variable "project_name" {
-  description = "Project name used as a prefix for resource names"
-  type        = string
-}
-
-variable "environment" {
-  description = "Environment name (dev, staging, production)"
-  type        = string
-}
-
-variable "vpc_cidr" {
-  description = "CIDR block for the VPC"
-  type        = string
-  default     = "10.0.0.0/16"
-}
-
-variable "enable_s3_gateway_endpoint" {
   description = "Create an S3 gateway VPC endpoint"
   type        = bool
   default     = true
 }
+
+# SECURITY
 
 variable "admin_cidr_blocks" {
   description = "CIDRs allowed to SSH to the bastion"
@@ -73,7 +53,6 @@ variable "admin_cidr_blocks" {
         for c in var.admin_cidr_blocks : can(cidrhost(c, 0))
       ])
     )
-
     error_message = "admin_cidr_blocks must contain at least one valid CIDR."
   }
 
@@ -90,13 +69,13 @@ variable "alb_ingress_cidrs" {
 }
 
 variable "enable_http_listener" {
-  description = "Allow HTTP port 80 for redirecting traffic to HTTPS"
+  description = "Allow HTTP port 80 (redirects to HTTPS when a certificate is set)"
   type        = bool
   default     = true
 }
 
 variable "gateway_port" {
-  description = "API gateway listening port"
+  description = "API gateway listening port (Kong 8000, APISIX 9080)"
   type        = number
   default     = 8000
 }
@@ -108,7 +87,7 @@ variable "keycloak_port" {
 }
 
 variable "ca_port" {
-  description = "Certificate Authority listening port"
+  description = "Certificate Authority listening port (Smallstep 9000, EJBCA 8443)"
   type        = number
   default     = 9000
 }
@@ -125,14 +104,51 @@ variable "ssh_port" {
   default     = 22
 }
 
-variable "tags" {
-  description = "Additional tags applied to resources"
-  type        = map(string)
-  default     = {}
+# ALB
+
+variable "health_check_path" {
+  description = "Path the ALB probes on the gateway (must return a healthy status)"
+  type        = string
+  default     = "/"
 }
 
+variable "health_check_matcher" {
+  description = "HTTP status codes that count as healthy"
+  type        = string
+  default     = "200-399"
+}
 
-# KMS 
+variable "certificate_arn" {
+  description = "ACM certificate ARN in af-south-1 (null = HTTP-only, dev only)"
+  type        = string
+  default     = null
+}
+
+variable "ssl_policy" {
+  description = "TLS policy for the HTTPS listener"
+  type        = string
+  default     = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+}
+
+variable "enable_deletion_protection" {
+  description = "Protect the ALB from accidental deletion (true for prod)"
+  type        = bool
+  default     = false
+}
+
+variable "idle_timeout" {
+  description = "ALB idle connection timeout in seconds"
+  type        = number
+  default     = 60
+}
+
+variable "access_logs_bucket" {
+  description = "S3 bucket for ALB access logs (null = disabled)"
+  type        = string
+  default     = null
+}
+
+#  KMS
 
 variable "deletion_window_in_days" {
   description = "Waiting period before scheduled KMS key deletion"
