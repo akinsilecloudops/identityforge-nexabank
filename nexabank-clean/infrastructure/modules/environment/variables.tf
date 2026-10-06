@@ -1,3 +1,5 @@
+# NETWORKING VARIABLES 
+
 variable "project_name" {
   description = "Project name used as a prefix for resource names"
   type        = string
@@ -32,6 +34,99 @@ variable "enable_s3_gateway_endpoint" {
 
 variable "tags" {
   description = "Additional tags applied to infrastructure"
+  type        = map(string)
+  default     = {}
+}
+
+#SECURITY VARIABLES 
+
+variable "project_name" {
+  description = "Project name used as a prefix for resource names"
+  type        = string
+}
+
+variable "environment" {
+  description = "Environment name (dev, staging, production)"
+  type        = string
+}
+
+variable "vpc_cidr" {
+  description = "CIDR block for the VPC"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "enable_s3_gateway_endpoint" {
+  description = "Create an S3 gateway VPC endpoint"
+  type        = bool
+  default     = true
+}
+
+variable "admin_cidr_blocks" {
+  description = "CIDRs allowed to SSH to the bastion"
+  type        = list(string)
+
+  validation {
+    condition = (
+      length(var.admin_cidr_blocks) > 0 &&
+      alltrue([
+        for c in var.admin_cidr_blocks : can(cidrhost(c, 0))
+      ])
+    )
+
+    error_message = "admin_cidr_blocks must contain at least one valid CIDR."
+  }
+
+  validation {
+    condition     = !contains(var.admin_cidr_blocks, "0.0.0.0/0")
+    error_message = "admin_cidr_blocks must not contain 0.0.0.0/0."
+  }
+}
+
+variable "alb_ingress_cidrs" {
+  description = "CIDRs allowed to reach the public ALB"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "enable_http_listener" {
+  description = "Allow HTTP port 80 for redirecting traffic to HTTPS"
+  type        = bool
+  default     = true
+}
+
+variable "gateway_port" {
+  description = "API gateway listening port"
+  type        = number
+  default     = 8000
+}
+
+variable "keycloak_port" {
+  description = "Keycloak listening port"
+  type        = number
+  default     = 8443
+}
+
+variable "ca_port" {
+  description = "Certificate Authority listening port"
+  type        = number
+  default     = 9000
+}
+
+variable "db_port" {
+  description = "PostgreSQL database port"
+  type        = number
+  default     = 5432
+}
+
+variable "ssh_port" {
+  description = "SSH port"
+  type        = number
+  default     = 22
+}
+
+variable "tags" {
+  description = "Additional tags applied to resources"
   type        = map(string)
   default     = {}
 }
