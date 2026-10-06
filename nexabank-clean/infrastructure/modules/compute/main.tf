@@ -154,12 +154,14 @@ resource "aws_autoscaling_group" "app" {
   }
 }
 
-  root_block_device {
-    volume_size = 20
-    volume_type = "gp3"
-    encrypted   = true
-    kms_key_id  = var.ebs_kms_key_arn != "" ? var.ebs_kms_key_arn : null
-  }
+ block_device_mappings {
+  device_name = "/dev/xvda"
 
-  tags = merge(var.tags, { Name = "${var.name}-ec2" })
+  ebs {
+    volume_size           = 20
+    volume_type           = "gp3"
+    encrypted             = true
+    kms_key_id            = var.ebs_kms_key_arn != "" ? var.ebs_kms_key_arn : null
+    delete_on_termination = true
+  }
 }
