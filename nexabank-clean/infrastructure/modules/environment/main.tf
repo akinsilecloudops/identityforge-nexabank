@@ -132,3 +132,67 @@ module "rds" {
 
   tags = var.tags
 }
+
+# COMPUTE
+
+module "bastion" {
+  source = "./modules/compute"
+
+  name = "${local.name}-bastion"
+  tags = var.tags
+
+  subnet_ids                  = [module.networking.public_subnet_id_primary]
+  security_group_ids          = [module.security.bastion_sg_id]
+  associate_public_ip_address = true
+
+  instance_type          = var.bastion_instance_type
+  ebs_kms_key_arn        = module.kms.ebs_key_arn
+  termination_protection = local.is_prod
+}
+
+module "keycloak" {
+  source = "./modules/compute"
+
+  name = "${local.name}-keycloak"
+  tags = var.tags
+
+  # Single subnet until NAT-per-AZ and RDS Multi-AZ exist.
+  # Then add module.networking.private_subnet_id_secondary here.
+  subnet_ids         = [module.networking.private_subnet_id_primary]
+  security_group_ids = [module.security.keycloak_sg_id]
+
+  instance_type           = var.keycloak_instance_type
+  ebs_kms_key_arn         = module.kms.ebs_key_arn
+  enable_cloudwatch_agent = true
+
+  enable_s3_access  = true
+  backup_bucket_arn = module.storage.bucket_arn
+  s3_kms_key_arn    = module.kms.s3_key_arn
+
+  termination_protection = local.is_prod
+
+  # Wait for the NAT route so first-boot downloads and SSM registration work
+  depends_on = [module.networking]
+}
+
+module "ca" {
+  source = "./modules/compute"
+
+  name = "${local.name}-ca"
+  tags = var.tags
+
+  subnet_ids         = [module.networking.private_subnet_id_primary]
+  security_group_ids = [module.security.ca_sg_id]
+
+  instance_type           = var.ca_instance_type
+  ebs_kms_key_arn         = module.kms.ebs_key_arn
+  enable_cloudwatch_agent = true
+
+  enable_s3_access  = true
+  backup_bucket_arn = module.storage.bucket_arn
+  s3_kms_key_arn    = module.kms.s3_key_arn
+
+  termination_protection = local.is_prod
+
+  depends_on = [module.networking]
+}
