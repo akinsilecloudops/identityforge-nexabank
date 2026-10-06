@@ -46,7 +46,7 @@ variable "engine_version" {
 variable "instance_class" {
   description = "Primary instance class. Check availability in af-south-1 before choosing."
   type        = string
-  default     = "db.m5.large"
+  default     = "db.t3.micro"
 }
 
 variable "replica_instance_class" {
@@ -96,7 +96,7 @@ variable "db_name" {
 variable "master_username" {
   description = "Master username (do not use the reserved word admin)"
   type        = string
-  default     = "pgadmin"
+  default     = "nexabank_admin"
 }
 
 # Backups and maintenance
