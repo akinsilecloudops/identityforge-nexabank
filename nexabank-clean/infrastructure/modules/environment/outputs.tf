@@ -87,3 +87,30 @@ output "rds_sg_id" {
   description = "RDS security group ID"
   value       = module.security.rds_sg_id
 }
+
+# KMS CMK
+
+output "kms_key_arns" {
+  description = "Map of KMS key purpose to key ARN"
+  value       = module.kms.key_arns
+}
+
+output "kms_key_ids" {
+  description = "Map of KMS key purpose to key ID"
+  value       = module.kms.key_ids
+}
+
+output "kms_rds_key_arn" {
+  description = "KMS key ARN used for RDS encryption"
+  value       = module.kms.rds_key_arn
+}
+
+output "kms_s3_key_arn" {
+  description = "KMS key ARN used for S3 encryption"
+  value       = module.kms.s3_key_arn
+}
+
+output "kms_ebs_key_arn" {
+  description = "KMS key ARN used for EBS encryption"
+  value       = module.kms.ebs_key_arn
+}
