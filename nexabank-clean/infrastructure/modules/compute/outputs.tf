@@ -1,6 +1,6 @@
 output "ec2_instance_id" {
   description = "ID of the EC2 instance."
-  value       = module.compute.instance_id
+  value       = aws_security_group.instance_id
 }
 
 output "ec2_private_ip" {
