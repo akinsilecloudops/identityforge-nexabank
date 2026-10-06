@@ -177,3 +177,139 @@ output "alb_target_group_arn" {
   description = "Gateway target group  (the ECS service is attached to this)"
   value       = module.alb.target_group_arn
 }
+
+
+# RDS
+
+variable "rds_engine_version" {
+  description = "PostgreSQL version (major-only lets AWS pick the latest minor)"
+  type        = string
+  default     = "17"
+}
+
+variable "rds_instance_class" {
+  description = "RDS primary instance class (verify availability in af-south-1)"
+  type        = string
+  default     = "db.m5.large"
+}
+
+variable "rds_replica_instance_class" {
+  description = "RDS replica instance class (null = same as primary)"
+  type        = string
+  default     = null
+}
+
+variable "rds_allocated_storage" {
+  description = "Initial RDS storage in GiB"
+  type        = number
+  default     = 100
+
+  validation {
+    condition     = var.rds_allocated_storage >= 20
+    error_message = "rds_allocated_storage must be at least 20 GiB."
+  }
+}
+
+variable "rds_max_allocated_storage" {
+  description = "RDS storage autoscaling ceiling in GiB"
+  type        = number
+  default     = 500
+
+  validation {
+    condition     = var.rds_max_allocated_storage == 0 || var.rds_max_allocated_storage >= var.rds_allocated_storage
+    error_message = "rds_max_allocated_storage must be 0 or greater than/equal to rds_allocated_storage."
+  }
+}
+
+variable "rds_multi_az" {
+  description = "Synchronous standby for automatic failover"
+  type        = bool
+  default     = false
+}
+
+variable "rds_create_read_replica" {
+  description = "Create the AZ-2 read replica"
+  type        = bool
+  default     = true
+}
+
+variable "rds_db_name" {
+  description = "Initial database created on the primary"
+  type        = string
+  default     = "nexabank"
+}
+
+variable "rds_master_username" {
+  description = "RDS master username (not the reserved word admin)"
+  type        = string
+  default     = "pgadmin"
+}
+
+variable "rds_backup_retention_period" {
+  description = "Primary automated backup retention in days (1-35)"
+  type        = number
+  default     = 14
+
+  validation {
+    condition     = var.rds_backup_retention_period >= 1 && var.rds_backup_retention_period <= 35
+    error_message = "rds_backup_retention_period must be between 1 and 35 days."
+  }
+}
+
+variable "rds_replica_backup_retention_period" {
+  description = "Replica automated backup retention in days (0 disables)"
+  type        = number
+  default     = 7
+
+  validation {
+    condition     = var.rds_replica_backup_retention_period >= 0 && var.rds_replica_backup_retention_period <= 35
+    error_message = "rds_replica_backup_retention_period must be between 0 and 35 days."
+  }
+}
+
+variable "rds_backup_window" {
+  description = "Daily backup window (UTC)"
+  type        = string
+  default     = "02:00-03:00"
+}
+
+variable "rds_maintenance_window" {
+  description = "Weekly maintenance window (UTC); must not overlap the backup window"
+  type        = string
+  default     = "sun:03:30-sun:04:30"
+}
+
+variable "rds_apply_immediately" {
+  description = "Apply changes immediately instead of in the next maintenance window"
+  type        = bool
+  default     = false
+}
+
+variable "rds_deletion_protection" {
+  description = "Block RDS deletion"
+  type        = bool
+  default     = true
+}
+
+variable "rds_enable_performance_insights" {
+  description = "Enable Performance Insights (7-day retention)"
+  type        = bool
+  default     = true
+}
+
+variable "rds_monitoring_role_arn" {
+  description = "IAM role ARN for Enhanced Monitoring (null = disabled until the IAM module exists)"
+  type        = string
+  default     = null
+}
+
+variable "rds_monitoring_interval" {
+  description = "Enhanced Monitoring interval in seconds (used only when a role ARN is set)"
+  type        = number
+  default     = 60
+
+  validation {
+    condition     = contains([1, 5, 10, 15, 30, 60], var.rds_monitoring_interval)
+    error_message = "rds_monitoring_interval must be 1, 5, 10, 15, 30 or 60."
+  }
+}
