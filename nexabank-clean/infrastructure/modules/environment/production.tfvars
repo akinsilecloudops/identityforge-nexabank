@@ -80,3 +80,6 @@ rds_monitoring_interval        = 60
 bastion_instance_type  = "t3.small"  # SSH/SSM jump host, light load
 keycloak_instance_type = "t3.large"  # JVM app: 2 vCPU, 8 GiB. t3.medium (4 GiB) is the floor
 ca_instance_type       = "t3.small"  # Smallstep CA is light; EJBCA needs more (t3.large)
+
+# ECS gateway
+gateway_image = "<account-id>.dkr.ecr.af-south-1.amazonaws.com/nexabank-gateway:1.0.0" # REPLACE
