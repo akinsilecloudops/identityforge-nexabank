@@ -87,7 +87,7 @@ module "kms" {
 
 # IAM
 module "iam" {
-  source = "./iam"
+  source = "./modules/iam"
 
   project_name = var.project_name
   environment  = var.environment
@@ -204,4 +204,28 @@ module "ca" {
   termination_protection = local.is_prod
 
   depends_on = [module.networking]
+}
+
+# ECS GATEWAY
+module "ecs_gateway" {
+  source = "./modules/ecs-gateway"
+
+  project_name = var.project_name
+  environment  = var.environment
+  tags         = var.tags
+
+  # Single subnet for now, to match Keycloak. Add private_subnet_id_secondary for multi-AZ.
+  subnet_ids         = [module.networking.private_subnet_id_primary]
+  security_group_ids = [module.security.gateway_sg_id]
+  target_group_arn   = module.alb.target_group_arn
+
+  execution_role_arn = module.iam.ecs_execution_role_arn
+  task_role_arn      = module.iam.ecs_task_role_arn
+
+  container_image = var.gateway_image
+  container_port  = var.gateway_port
+
+  # The target group must be attached to a listener, and the execution role's
+  # policy attached, before the service can start tasks
+  depends_on = [module.alb, module.iam]
 }
