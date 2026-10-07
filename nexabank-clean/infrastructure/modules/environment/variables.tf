@@ -333,3 +333,8 @@ variable "ca_instance_type" {
   type        = string
   default     = "t3.small"
 }
+
+variable "gateway_image" {
+  description = "Gateway container image URI with an immutable tag (ECR)"
+  type        = string
+}
