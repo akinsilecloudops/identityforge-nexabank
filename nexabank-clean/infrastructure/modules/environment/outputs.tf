@@ -155,3 +155,13 @@ output "asg_names" {
     ca       = module.ca.asg_name
   }
 }
+
+output "ecs_cluster_name" {
+  description = "ECS cluster name"
+  value       = module.ecs_gateway.cluster_name
+}
+
+output "ecs_service_name" {
+  description = "ECS gateway service name"
+  value       = module.ecs_gateway.service_name
+}
