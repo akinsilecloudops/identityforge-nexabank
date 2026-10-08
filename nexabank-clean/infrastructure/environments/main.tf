@@ -67,7 +67,7 @@ module "alb" {
   enable_deletion_protection = var.enable_deletion_protection
   idle_timeout               = var.idle_timeout
 
-  access_logs_bucket = var.access_logs_bucket
+  access_logs_bucket = module.storage.alb_logs_bucket_id
 
   tags = var.tags
 }
@@ -222,7 +222,7 @@ module "ecs_gateway" {
   execution_role_arn = module.iam.ecs_execution_role_arn
   task_role_arn      = module.iam.ecs_task_role_arn
 
-  container_image = var.gateway_image
+  container_image = "${module.storage.ecr_repository_url}:${var.gateway_image_tag}"
   container_port  = var.gateway_port
 
   # The target group must be attached to a listener, and the execution role's
