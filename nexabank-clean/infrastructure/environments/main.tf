@@ -229,3 +229,13 @@ module "ecs_gateway" {
   # policy attached, before the service can start tasks
   depends_on = [module.alb, module.iam]
 }
+
+module "storage" {
+  source = "./modules/storage"
+
+  name        = local.name
+  common_tags = var.tags
+
+  s3_kms_key_arn         = module.kms.s3_key_arn
+  create_alb_logs_bucket = true
+}
