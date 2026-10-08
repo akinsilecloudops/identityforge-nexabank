@@ -338,3 +338,8 @@ variable "gateway_image" {
   description = "Gateway container image URI with an immutable tag (ECR)"
   type        = string
 }
+
+variable "gateway_image_tag" {
+  description = "Tag of the gateway image in the ECR repo (use an immutable version such as 1.0.0, never latest)"
+  type        = string
+}
