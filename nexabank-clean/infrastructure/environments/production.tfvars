@@ -40,7 +40,6 @@ idle_timeout               = 60
 health_check_path    = "/healthz"
 health_check_matcher = "200-399"
 
-access_logs_bucket = null # Set to the S3 bucket name once bucket is available.
 
 # KMS
 deletion_window_in_days = 30
@@ -82,4 +81,4 @@ keycloak_instance_type = "t3.large"  # JVM app: 2 vCPU, 8 GiB. t3.medium (4 GiB)
 ca_instance_type       = "t3.small"  # Smallstep CA is light; EJBCA needs more (t3.large)
 
 # ECS gateway
-gateway_image = "<account-id>.dkr.ecr.af-south-1.amazonaws.com/nexabank-gateway:1.0.0" # REPLACE
+gateway_image_tag = "1.0.0"
