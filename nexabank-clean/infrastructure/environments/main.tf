@@ -1,7 +1,12 @@
 # NETWORKING
 
+locals {
+  name    = "${var.project_name}-${var.environment}"
+  is_prod = contains(["prod", "production"], lower(var.environment))
+}
+
 module "networking" {
-  source = "./modules/networking"
+  source = "../modules/networking"
 
   project_name = var.project_name
   environment  = var.environment
@@ -15,7 +20,7 @@ module "networking" {
 # SECURITY
 
 module "security" {
-  source = "./modules/security"
+  source = "../modules/security"
 
   project_name = var.project_name
   environment  = var.environment
@@ -45,7 +50,7 @@ module "security" {
 # APPLICATION LOAD BALANCER
 
 module "alb" {
-  source = "./modules/alb"
+  source = "../modules/ALB"
 
   project_name = var.project_name
   environment  = var.environment
@@ -76,7 +81,7 @@ module "alb" {
 # KMS CMK
 
 module "kms" {
-  source = "./modules/kms"
+  source = "../modules/kms"
 
   project_name            = var.project_name
   environment             = var.environment
@@ -87,7 +92,7 @@ module "kms" {
 
 # IAM
 module "iam" {
-  source = "./modules/iam"
+  source = "../modules/iam"
 
   project_name = var.project_name
   environment  = var.environment
@@ -98,7 +103,7 @@ module "iam" {
 # RDS POSTGRESQL
 
 module "rds" {
-  source = "./modules/rds"
+  source = "../modules/rds"
 
   project_name = var.project_name
   environment  = var.environment
@@ -145,7 +150,7 @@ module "rds" {
 # COMPUTE
 
 module "bastion" {
-  source = "./modules/compute"
+  source = "../modules/compute"
 
   name = "${local.name}-bastion"
   tags = var.tags
@@ -160,7 +165,7 @@ module "bastion" {
 }
 
 module "keycloak" {
-  source = "./modules/compute"
+  source = "../modules/compute"
 
   name = "${local.name}-keycloak"
   tags = var.tags
@@ -185,7 +190,7 @@ module "keycloak" {
 }
 
 module "ca" {
-  source = "./modules/compute"
+  source = "../modules/compute"
 
   name = "${local.name}-ca"
   tags = var.tags
@@ -208,7 +213,7 @@ module "ca" {
 
 # ECS GATEWAY
 module "ecs_gateway" {
-  source = "./modules/ecs-gateway"
+  source = "../modules/ecs-gateway"
 
   project_name = var.project_name
   environment  = var.environment
@@ -231,7 +236,7 @@ module "ecs_gateway" {
 }
 
 module "storage" {
-  source = "./modules/storage"
+  source = "../modules/storage"
 
   name        = local.name
   common_tags = var.tags

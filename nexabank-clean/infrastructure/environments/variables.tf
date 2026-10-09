@@ -1,5 +1,10 @@
 # GENERAL
 
+variable "aws_region" {
+  description = "AWS region where NexaBank infrastructure will be deployed"
+  type        = string
+}
+
 variable "project_name" {
   description = "Project name used as a prefix for resource names"
   type        = string
@@ -332,11 +337,6 @@ variable "ca_instance_type" {
   description = "CA instance type (x86_64)"
   type        = string
   default     = "t3.small"
-}
-
-variable "gateway_image" {
-  description = "Gateway container image URI with an immutable tag (ECR)"
-  type        = string
 }
 
 variable "gateway_image_tag" {

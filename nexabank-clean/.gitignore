@@ -36,3 +36,12 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# Terraform local files and state
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+*.tfstate.lock.info
+crash.log
+crash.*.log

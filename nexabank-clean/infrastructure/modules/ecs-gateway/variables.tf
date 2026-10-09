@@ -60,9 +60,9 @@ variable "container_name" {
 }
 
 variable "container_port" {
-  description = "Port the gateway listens on (Kong 8000, APISIX 9080); must match the security module's gateway_port and the target group"
+  description = "Port the NexaBank API listens on; must match gateway_port, the security group, and the ALB target group"
   type        = number
-  default     = 8000
+  default     = 3000
 
   validation {
     condition     = var.container_port >= 1 && var.container_port <= 65535
