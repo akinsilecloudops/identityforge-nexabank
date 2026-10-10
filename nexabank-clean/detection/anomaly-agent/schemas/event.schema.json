@@ -1,0 +1,58 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NexaBankTransactionEvent",
+  "description": "One JSON object per line written by the NexaBank API for every transaction. event_time must be UTC.",
+  "type": "object",
+  "required": [
+    "event_time",
+    "event_type",
+    "agent_id",
+    "assigned_region",
+    "region",
+    "device_id",
+    "cert_dn",
+    "amount",
+    "result"
+  ],
+  "properties": {
+    "event_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC time ending in Z, e.g. 2026-10-05T09:24:00Z"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": ["transaction"]
+    },
+    "agent_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,64}$"
+    },
+    "assigned_region": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z ]{0,39}$"
+    },
+    "region": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z ]{0,39}$"
+    },
+    "device_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,64}$"
+    },
+    "cert_dn": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9=,._ -]{1,256}$"
+    },
+    "amount": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1000000000000
+    },
+    "result": {
+      "type": "string",
+      "enum": ["success", "failure"]
+    }
+  },
+  "additionalProperties": true
+}

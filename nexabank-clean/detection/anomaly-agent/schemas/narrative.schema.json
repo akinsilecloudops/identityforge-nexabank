@@ -1,0 +1,23 @@
+﻿{
+  "type": "object",
+  "properties": {
+    "summary": {
+      "type": "string",
+      "description": "Maximum 2 plain-English sentences saying what happened and why it is unusual."
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "recommended_action": {
+      "type": "string",
+      "description": "One concrete action a bank supervisor should take now."
+    }
+  },
+  "required": [
+    "summary",
+    "risk_level",
+    "recommended_action"
+  ],
+  "additionalProperties": false
+}
